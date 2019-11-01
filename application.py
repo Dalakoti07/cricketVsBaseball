@@ -21,8 +21,8 @@ import cv2
 import os
 import requests
 
-def weAreLive(url):
-    pic_url=url
+def weAreLive():
+    pic_url=input('enter the url ')
     with open('test.jpg', 'wb') as handle:
             response = requests.get(pic_url, stream=True)
 
@@ -38,9 +38,10 @@ def weAreLive(url):
     image = cv2.imread('test.jpg')
     image = cv2.resize(image, (160,160))
     image = img_to_array(image)
-
+#     cv2.imshow('ImageWindow',image)
+#     cv2.waitKey()
 #         Making the predictions
-    res=model.predict(np.expand_dims(testX[indx], axis=0))
+    res=loaded_model.predict(np.expand_dims(image, axis=0))
     if res[0][0]>res[0][1]:
         return "Baseball"
     else:
@@ -56,7 +57,7 @@ def index():
     return render_template('home.html')
 
 # request would be made from js code
-@app.route("/predict",methods=["POST"])
+@app.route("/predict",methods=["POST","GET"])
 def fetchdata():
     # what if user didnot apply any filter
     x=request.form.get("url")
