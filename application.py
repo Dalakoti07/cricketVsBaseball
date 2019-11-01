@@ -1,33 +1,25 @@
-from tensorflow.keras.applications import MobileNetV2
-# this line in cmd is asking for path itself
 from flask import Flask, session,redirect,url_for,render_template,request,jsonify
 import requests
-base_model =MobileNetV2(input_shape=(160,160,3),include_top=False,weights='imagenet')
+from tensorflow.keras.models import model_from_json
 
-from tensorflow.keras.layers import Dense,GlobalAveragePooling2D
-from tensorflow.keras.layers import Dropout
-x=base_model.output
-x=GlobalAveragePooling2D()(x)
-x=Dense(1024,activation='relu')(x) #we add dense layers so that the model can learn more complex functions and classify for better results.
-x=Dropout(0.2)(x)
-x=Dense(512,activation='relu')(x) #dense layer 2
-x=Dropout(0.2)(x)
-x=Dense(256,activation='relu')(x) #dense layer 3
-preds=Dense(2,activation='softmax')(x) #final layer with softmax activation
+json_file = open('model.json','r')
+loaded_model_json = json_file.read()
+json_file.close()
+loaded_model = model_from_json(loaded_model_json)
+#load woeights into new model
+loaded_model.load_weights("ReTraining.h5")
+print("Loaded Model from disk")
 
-from tensorflow.keras.models import Model
-model=Model(inputs=base_model.input,outputs=preds)
+app = Flask(__name__)
 
-model.load_weights('SixthTraining.h5')
-
-from keras.optimizers import Adam
+# from keras.optimizers import Adam
 from keras.preprocessing.image import img_to_array
 import numpy as np
 import argparse
 import random
 import cv2
 import os
-
+import requests
 
 def weAreLive(url):
     pic_url=url
@@ -71,6 +63,6 @@ def fetchdata():
     res=weAreLive(x)
     return json.dumps({"res":res})
 
-# if __name__ == '__main__':
-# 	app.debug=True
-# 	app.run()
+if __name__ == '__main__':
+	app.debug=True
+	app.run()
