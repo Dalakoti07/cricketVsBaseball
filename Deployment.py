@@ -1,11 +1,21 @@
+
 from tensorflow.keras.applications import MobileNetV2
-# this line in cmd is asking for path itself
-from flask import Flask, session,redirect,url_for,render_template,request,jsonify
-import requests
-base_model =MobileNetV2(input_shape=(160,160,3),include_top=False,weights='imagenet')
+
+
+base_model =MobileNetV2(input_shape=(160,160,3),
+                                               include_top=False,
+                                               weights='imagenet')
+
+
+
 
 from tensorflow.keras.layers import Dense,GlobalAveragePooling2D
+
+
+# global_average_layer = tf.keras.layers.GlobalAveragePooling2D()
 from tensorflow.keras.layers import Dropout
+
+
 x=base_model.output
 x=GlobalAveragePooling2D()(x)
 x=Dense(1024,activation='relu')(x) #we add dense layers so that the model can learn more complex functions and classify for better results.
@@ -15,13 +25,22 @@ x=Dropout(0.2)(x)
 x=Dense(256,activation='relu')(x) #dense layer 3
 preds=Dense(2,activation='softmax')(x) #final layer with softmax activation
 
+
 from tensorflow.keras.models import Model
+
+
 model=Model(inputs=base_model.input,outputs=preds)
 
 model.load_weights('SixthTraining.h5')
 
-from keras.optimizers import Adam
+
+# Now hoping that model is set and ready let us see how the model is performing on data
+
+from keras.preprocessing.image import ImageDataGenerator
 from keras.preprocessing.image import img_to_array
+from keras.utils import to_categorical
+from imutils import paths
+import matplotlib.pyplot as plt
 import numpy as np
 import argparse
 import random
@@ -29,8 +48,12 @@ import cv2
 import os
 
 
-def weAreLive(url):
-    pic_url=url
+from PIL import Image
+import requests
+
+
+def weAreLive():
+    pic_url=input()
     with open('test.jpg', 'wb') as handle:
             response = requests.get(pic_url, stream=True)
 
@@ -50,27 +73,12 @@ def weAreLive(url):
 #         Making the predictions
     res=model.predict(np.expand_dims(testX[indx], axis=0))
     if res[0][0]>res[0][1]:
-        return "Baseball"
+        print("Baseball")
     else:
-        return "Cricket"
+        print("Cricket")
 #     deleting the file at last
     os.remove("test.jpg")
     
 
 
-
-@app.route("/")
-def index():
-    return render_template('home.html')
-
-# request would be made from js code
-@app.route("/predict",methods=["POST"])
-def fetchdata():
-    # what if user didnot apply any filter
-    x=request.form.get("url")
-    res=weAreLive(x)
-    return json.dumps({"res":res})
-
-# if __name__ == '__main__':
-# 	app.debug=True
-# 	app.run()
+weAreLive()

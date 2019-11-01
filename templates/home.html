@@ -9,14 +9,9 @@
   </head>
   <body>
     <div class="center-div">
-      <form class="form-cl">
-        <input
-          type="text"
-          id="url-id"
-          name="Image Url"
-          placeholder="paste Url Here"
-        /><br />
-        <input id="predBtn" type="button" value="Predict" />
+      <form method="POST" action="{{ url_for('predict') }}" class="form-cl">
+        <input type="text" name="url" class="textbox" placeholder="Url" />
+        <input title="Search" value="Pred" type="button" class="button" />
       </form>
       <img class="img-cl" id="img-id" src="" />
     </div>
