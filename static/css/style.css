@@ -1,0 +1,14 @@
+.center-div {
+  /* border: solid 10px green; */
+  margin: 20rem, 80%;
+}
+
+.form-cl {
+  display: inline;
+  margin: 0, 10rem;
+  /* border: solid 5px red; */
+}
+
+.img-cl {
+  display: invisible;
+}
