@@ -1,4 +1,4 @@
 dataset
 testing.ipynb
 /cob
-*.h5
+__pycache__
